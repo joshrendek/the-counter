@@ -1,0 +1,13 @@
+package: github.com/joshrendek/the-counter
+import:
+- package: github.com/gin-gonic/gin
+- package: github.com/rs/zerolog
+  subpackages:
+  - log
+- package: k8s.io/apimachinery
+  subpackages:
+  - pkg/apis/meta/v1
+- package: k8s.io/client-go
+  subpackages:
+  - kubernetes
+  - tools/clientcmd
