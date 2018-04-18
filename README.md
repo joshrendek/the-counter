@@ -9,6 +9,8 @@ cd the-counter
 helm upgrade -i --namespace the-counter the-counter deployment/the-counter
 ```
 
+Demo: https://the-counter.svc.bluescripts.net
+
 # Test after installation
 
 There is a helm test file provided that can be run like this (after installing):
