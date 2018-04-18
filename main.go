@@ -7,6 +7,8 @@ import (
 
 	"io/ioutil"
 
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/rs/zerolog/log"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -19,20 +21,40 @@ func main() {
 	kubeclient := NewKubeClient()
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
-		pods, _ := kubeclient.CoreV1().Pods(currentNamespace()).List(metav1.ListOptions{})
+		pods, err := kubeclient.CoreV1().Pods(currentNamespace()).List(metav1.ListOptions{})
+		if err != nil {
+			log.Error().Err(err).Msg("error listing pods")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
 		c.JSON(200, gin.H{
 			"count": len(pods.Items),
 		})
+	})
+
+	r.GET("/healthz", func(c *gin.Context) {
+		_, err := kubeclient.CoreV1().Pods(currentNamespace()).List(metav1.ListOptions{})
+		if err != nil {
+			log.Error().Err(err).Msg("error listing pods")
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(200, gin.H{"status": "ok"})
 	})
 
 	r.Run()
 }
 
 func currentNamespace() string {
+	// default for local / no gin mode set
+	if os.Getenv("GIN_MODE") != "release" {
+		return "default"
+	}
 	data, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
 	if err != nil {
 		log.Fatal().Err(err).Msg("Error reading service account namespace")
 	}
+	log.Info().Msgf("namespace: %s", string(data))
 	return string(data)
 }
 
