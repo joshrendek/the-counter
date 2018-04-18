@@ -14,13 +14,14 @@ docker/push:
 docker/run:
 	docker run -p 8080:8080 joshrendek/the-counter
 
-test: test/integration test/unit
+docker/test:
+	docker build -t joshrendek/the-counter-test -f Dockerfile.test .
+	docker run joshrendek/the-counter-test
 
-test/convey:
-	goconvey
+test: test/unit
 
 test/unit:
-	go test -v ./... -cover
+	go test -v $(glide nv) -cover
 
 dev:
 	go run main.go

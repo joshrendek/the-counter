@@ -17,8 +17,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func main() {
-	kubeclient := NewKubeClient()
+func routerSetup(kubeclient kubernetes.Interface) *gin.Engine {
 	r := gin.Default()
 	r.GET("/", func(c *gin.Context) {
 		pods, err := kubeclient.CoreV1().Pods(currentNamespace()).List(metav1.ListOptions{})
@@ -41,8 +40,13 @@ func main() {
 		}
 		c.JSON(200, gin.H{"status": "ok"})
 	})
+	return r
+}
 
-	r.Run()
+func main() {
+	kubeclient := NewKubeClient()
+	server := routerSetup(kubeclient)
+	server.Run()
 }
 
 func currentNamespace() string {
