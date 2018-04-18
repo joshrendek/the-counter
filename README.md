@@ -1,7 +1,7 @@
 # Installation
 
 Cluster needs to have RBAC enabled. Default values file assumes your using traefik as an ingress. 
-Modify depending on cluster ingress.
+Modify depending on cluster ingress. Tested on Kubernetes Version `v1.10.0`.
 
 ```
 git clone git@github.com:joshrendek/the-counter.git
