@@ -30,6 +30,9 @@ func Test_Healthz(t *testing.T) {
 
 func Test_Count(t *testing.T) {
 	kubeclient := fake.NewSimpleClientset(&v1.Pod{
+		Status: v1.PodStatus{
+			Phase: "Running",
+		},
 		TypeMeta: metav1.TypeMeta{
 			Kind: "pod",
 		},

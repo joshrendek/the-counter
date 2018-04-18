@@ -26,8 +26,14 @@ func routerSetup(kubeclient kubernetes.Interface) *gin.Engine {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		running := 0
+		for _, pod := range pods.Items {
+			if pod.Status.Phase == "Running" {
+				running++
+			}
+		}
 		c.JSON(200, gin.H{
-			"count": len(pods.Items),
+			"count": running,
 		})
 	})
 
